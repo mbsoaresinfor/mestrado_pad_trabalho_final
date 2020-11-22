@@ -23,43 +23,33 @@ public class WordCount {
     private final static IntWritable one = new IntWritable(1);
     private Text word = new Text();
 
-    public void map(Object key, Text value, Context context
-                    ) throws IOException, InterruptedException {
-    	log("inicio map");
-    	StringTokenizer itr = new StringTokenizer(value.toString());
-        log(itr.toString());
+    public void map(Object key, Text value, Context context)
+                     throws IOException, InterruptedException {
+    	
+    	StringTokenizer itr = new StringTokenizer(value.toString());        
         while (itr.hasMoreTokens()) {
-        String token = itr.nextToken();
-        log("token: " + token);
-        word.set(token);
-        context.write(word, one);
-        }
-        log("fim map");
+	        String token = itr.nextToken();	        
+	        word.set(token);
+	        context.write(word, one);
+        }        
     }
 }
 
-    public static void log(String message) {
-    	System.out.println("DEBUG: " + message);
-    }
     
-public static class IntSumReducer
+    public static class IntSumReducer
         extends Reducer<Text,IntWritable,Text,IntWritable> {
     private IntWritable result = new IntWritable();
 
-    public void reduce(Text key, Iterable<IntWritable> values,
-                        Context context
-                        ) throws IOException, InterruptedException {
-    	log("inicio reduce");
-    	log("key: " + key);
+    public void reduce(Text key, Iterable<IntWritable> values, Context context )
+    					throws IOException, InterruptedException {
+    	
     	int sum = 0;
-        for (IntWritable val : values) {
-	        log("IntWritable:" + val);
+        for (IntWritable val : values) {	        
 	        sum += val.get();
         }
-        result.set(sum);
-        log("sum:" + sum);
-        context.write(key, result);
-        log("fim reduce");
+        result.set(sum);        
+        context.write(key, result);  
+        
     }
 }
 

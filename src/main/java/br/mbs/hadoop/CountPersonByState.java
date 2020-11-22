@@ -14,7 +14,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
 
-//https://www.programcreek.com/java-api-examples/?code=junneyang%2Fxxhadoop%2Fxxhadoop-master%2Fmr%2Fsrc%2Fmain%2Fjava%2Fcom%2Fxcompany%2Fxproject%2Fmr%2Fflowpartition%2FFlowPartitionMapper.java#
 public class CountPersonByState {
 
     public static class TokenizerMapper
@@ -26,10 +25,7 @@ public class CountPersonByState {
     private String separator = "\t";
     
 
-    public void map(Object key, Text value, Context context
-                    ) throws IOException, InterruptedException {
-
-    	
+    public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
     	
     	String[] tokens = value.toString().split(separator);
     	
@@ -37,13 +33,14 @@ public class CountPersonByState {
     	if(tokensOk) {
     		String name = tokens[0];
     		String state = tokens[1];
-    		word.set(state);
-    		context.write(word, one);
+    		if(state.toString().equalsIgnoreCase(stateToProcessor)) {
+    			word.set(state);
+        		context.write(word, one);
+    		}
+    		
     	}else {
     		System.err.println("Tokens invalids");
     	}
-    	
-
     }
 }
 
@@ -60,9 +57,7 @@ public static class IntSumReducer
 	private IntWritable result = new IntWritable();
 	
 
-    public void reduce(Text key, Iterable<IntWritable> values,
-                        Context context
-                        ) throws IOException, InterruptedException {
+    public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 
     	int sum = 0;
     	if(key.toString().equalsIgnoreCase(stateToProcessor)) {
@@ -75,10 +70,9 @@ public static class IntSumReducer
     	}else {
     		log("key ignored: " + key);
     	}
-        
-
     }
 }
+
 
 public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
@@ -87,6 +81,7 @@ public static void main(String[] args) throws Exception {
         System.err.println("Usage: CountPersonByState <in> <out> <state>");
         System.exit(2);
     }
+    
     log("Starting...");
     Job job = new Job(conf, "CountPersonByState");
     job.setJarByClass(CountPersonByState.class);
@@ -99,8 +94,7 @@ public static void main(String[] args) throws Exception {
     FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));
     if(otherArgs[2]  != null) {
     	stateToProcessor = otherArgs[2].toUpperCase();
-    }
-    
-    System.exit(job.waitForCompletion(true) ? 0 : 1);
+    }    
+    	System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
 }
