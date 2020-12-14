@@ -13,7 +13,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
-//https://docs.microsoft.com/pt-br/azure/hdinsight/hadoop/apache-hadoop-develop-deploy-java-mapreduce-linux
+// EXEMPLO DE ENTRADA
+// O Brasil é lindo
+// Brasil, um grande país. 
 
 public class WordCount {
 
@@ -26,11 +28,11 @@ public class WordCount {
     public void map(Object key, Text value, Context context)
                      throws IOException, InterruptedException {
     	
-    	StringTokenizer itr = new StringTokenizer(value.toString());        
+    	StringTokenizer itr = new StringTokenizer(value.toString());  // quebra a linha Ex:( O Brasil é lindo )     
         while (itr.hasMoreTokens()) {
-	        String token = itr.nextToken();	        
+	        String token = itr.nextToken();	 // pega cada palavra       
 	        word.set(token);
-	        context.write(word, one);
+	        context.write(word, one); // seta no contexto a palavra
         }        
     }
 }
@@ -44,6 +46,7 @@ public class WordCount {
     					throws IOException, InterruptedException {
     	
     	int sum = 0;
+    	// contabiliza cada palavra
         for (IntWritable val : values) {	        
 	        sum += val.get();
         }

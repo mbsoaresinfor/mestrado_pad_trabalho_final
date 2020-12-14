@@ -13,6 +13,11 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
+//EXEMPLO DE ENTRADA
+// MARCELO	RS 
+// PAULO RS  
+// FERNANDA	SC
+
 
 public class CountPersonByState {
 
@@ -29,13 +34,13 @@ public class CountPersonByState {
     	
     	String[] tokens = value.toString().split(separator);
     	
-    	boolean tokensOk = tokens != null && tokens.length == totalToken;
+    	boolean tokensOk = tokens != null && tokens.length == totalToken; // quebra a linha Ex: (MARCELO	RS)
     	if(tokensOk) {
-    		String name = tokens[0];
-    		String state = tokens[1];
-    		if(state.toString().equalsIgnoreCase(stateToProcessor)) {
+    		String name = tokens[0]; // pega o nome
+    		String state = tokens[1]; // pega o estado 
+    		if(state.toString().equalsIgnoreCase(stateToProcessor)) {// testa pelo estado passado por parametro
     			word.set(state);
-        		context.write(word, one);
+        		context.write(word, one); // seta no contexto o nome do estado
     		}
     		
     	}else {
@@ -60,9 +65,9 @@ public static class IntSumReducer
     public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 
     	int sum = 0;
-    	if(key.toString().equalsIgnoreCase(stateToProcessor)) {
+    	if(key.toString().equalsIgnoreCase(stateToProcessor)) {// testa pelo estado passado por parametro 
 
-    		for (IntWritable val : values) {
+    		for (IntWritable val : values) {// contabiliza o total de estados 
 		        sum += val.get();
 	        }
     		result.set(sum);        
